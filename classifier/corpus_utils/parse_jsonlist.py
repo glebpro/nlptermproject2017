@@ -7,8 +7,9 @@ def parse_json(fname):
         acc.append(json.loads(l))
     return acc
 
-# data = parse_json('CMV_5.jsonlist')
-# for l in data:
-#     print(json.dumps(l, indent=2))
+# data = parse_json('CMV_100.jsonlist')
+# # for l in data:
+# #     print(json.dumps(l, indent=2))
 #
+# print(json.dumps(data[0], indent=2))
 # print(len(data))

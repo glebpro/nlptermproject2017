@@ -1,3 +1,12 @@
+#
+#   Download posts from /r/changemyview as a JSON object.
+#   Each JSON post object written as 1 line to output file
+#   See data_format_readme.txt for how JSON object works.
+#
+#   @author Gleb Promokhov gleb.promokhov@gmail.com
+#
+
+
 import praw
 import json
 import re
@@ -34,12 +43,12 @@ def collectcomments(submission, reddit):
             return reps
 
     # apply deltapoints to relevent comments
-    def deltacomments_h(comments, deltas):
+    def deltacomments_h(comments, parent, deltas):
         if comments:
             for c in comments:
                 if c['id'] in deltas.keys():
-                    c['delta_by_user'] = deltas[str(c['id'])]
-                deltacomments_h(c['children'], deltas)
+                    parent['delta_by_user'] = deltas[str(c['id'])]
+                deltacomments_h(c['children'], c, deltas)
 
     coms = []
     delta = False
@@ -61,9 +70,8 @@ def collectcomments(submission, reddit):
     if deltabots_comment != '':
         delta = True
         comments_with_delta = collectdeltas(deltabots_comment, reddit)
-
         # which user(s) awarded delta points to which comment
-        deltacomments_h(coms, comments_with_delta)
+        deltacomments_h(coms, '', comments_with_delta)
 
     return coms, delta
 
@@ -82,7 +90,9 @@ def collectdeltas(deltabots_comment, reddit):
     for c in submission['comments']:
         if c['deltaCommentFullName'] not in output.keys():
             output[c['deltaCommentFullName']] = []
+            # output[c['deltaCommentFullName']].append(c['awardingUsername'])
             output[c['deltaCommentFullName']].append(c['awardingUsername'])
+
         else:
             output[c['deltaCommentFullName']].append(c['awardingUsername'])
 
@@ -102,7 +112,12 @@ def parsecomment(comment, ignore=0):
         author_delta_count = 0
     else:
         if '∞' not in author_delta_count:
-            author_delta_count = int(author_delta_count.split('∆')[0])
+
+            # I cannot figure why this breaks when author_delta_count = '1∆'
+            try:
+                author_delta_count = int(author_delta_count.replace('∆', ''))
+            except ValueError:
+                author_delta_count = 1
         else:
             author_delta_count = 0
 
@@ -142,6 +157,7 @@ def parsesubmission(submission):
         'body':             submission.selftext_html,
         'comments':         [],
         'delta':            False,
+        'archived':         submission.archived,
     }
 
 # gather posts and comments
@@ -199,9 +215,14 @@ def main():
             submissions = collectsubmissions(changemyview, reddit, pull_posts_after, 1)
             output_file.write(json.dumps(submissions[0], sort_keys=True)+"\n")
             pull_posts_after = submissions[0]['id']
-            time.sleep(3)
+            #time.sleep(3)
         except:
-            print("Unexpected error:", sys.exc_info()[0])
+            the_type, the_value, the_traceback = sys.exc_info()
+            if the_type == KeyboardInterrupt:
+                quit()
+            print(the_type)
+            print(the_traceback)
+            print(the_value)
 
         print("Curr processing: ", limit)
 
