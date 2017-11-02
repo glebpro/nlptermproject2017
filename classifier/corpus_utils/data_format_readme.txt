@@ -21,7 +21,7 @@ SUBMISSION:
     'archived':         true/false if submission archived
 
 Comments are recorded as tree-like structures, a list of comment JSON objects,
-each comment has a 'children' filed that is another list of comments
+each comment has a 'children' field that is another list of comments
 
 COMMENT:
     'archived':             true/false if comment archived

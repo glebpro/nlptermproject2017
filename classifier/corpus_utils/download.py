@@ -8,10 +8,13 @@
 
 
 import praw
+import prawcore as prawcore
 import json
 import re
 import sys
 import time
+import logging
+import requests
 
 # recursivley count comments
 def countcomments(comments, acc=0):
@@ -143,9 +146,17 @@ def parsecomment(comment, ignore=0):
 
 # return dict with only certain submission data
 def parsesubmission(submission):
+
+
+    author = ''
+    if submission.author == None:
+        author = 'DELETED'
+    else:
+        author = submission.author.name
+
     return {
         'id':               submission.fullname,
-        'author':           submission.author.name,
+        'author':           author,
         'title':            submission.title,
         'created_utc':      submission.created_utc,
         'upvotes':          submission.ups,
@@ -174,48 +185,75 @@ def collectsubmissions(changemyview, deltalog, pull_posts_after, limit):
     for submission in unparsedsubs:
 
         sub = {} # parsed submission
+        pull_posts_after = submission.fullname
 
         if submission.is_self == True \
             and submission.hidden == False \
-            and submission.stickied == False:
+            and submission.stickied == False \
+            and submission.author != 'Snorrrlax': # ignore mod
 
+            print('Parsing: ', submission)
             sub = parsesubmission(submission)
 
             # sub['delta'] True if any comments got delta point, False otherwise
             sub['comments'], sub['delta'] = collectcomments(submission, deltalog)
             sub['comment_count'] = countcomments(sub['comments'])
 
-        subs.append(sub)
+            subs.append(sub)
 
-    return subs
+    if len(subs) == 0:
+        return [], pull_posts_after
+
+    return subs, subs[len(subs)-1]['id']
 
 def main():
+
+    class JSONDebugRequestor(prawcore.Requestor):
+        def request(self, *args, **kwargs):
+            response = super().request(*args, **kwargs)
+            print(json.dumps(response.json(), indent=4))
+            return response
+
 
     # load creds
     creds = json.loads(open('.reddit.auth.json', 'r').read())
 
     # init reddit
+    my_session = requests.Session()
     reddit = praw.Reddit(client_id=creds["client_id"],
                          client_secret=creds["client_secret"],
-                         user_agent=creds["user_agent"])
+                         user_agent=creds["user_agent"],
+                         requestor_class=JSONDebugRequestor,
+                         requestor_kwargs={'session': my_session})
     changemyview = reddit.subreddit('changemyview')
     deltalog = reddit.subreddit('deltalog')
 
-    pull_posts_after = ''
-    limit = 100
+    # init logger
+    handler = logging.StreamHandler()
+    handler.setLevel(logging.DEBUG)
+    logger = logging.getLogger('prawcore')
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(handler)
+
+
+    pull_posts_after = 't3_72ex70'
+    limit = 10000
     _limit = limit
-    get_count = 0
+    get_count = 100
 
-    output_file = open('CMV_'+str(_limit)+'.jsonlist', 'w+')
+    output_file = open('CMV_'+str(_limit)+'.jsonlist', 'a')
+    print("^c to safely quit")
 
-    # pull posts 1 at a time
-    while limit != 0:
-        limit -= 1
+    while limit > 0:
+        limit -= get_count
         try:
-            submissions = collectsubmissions(changemyview, reddit, pull_posts_after, 1)
-            output_file.write(json.dumps(submissions[0], sort_keys=True)+"\n")
-            pull_posts_after = submissions[0]['id']
-            #time.sleep(3)
+            submissions, next_post = collectsubmissions(changemyview, reddit, pull_posts_after, get_count)
+            pull_posts_after = next_post
+            quit()
+            if len(submissions) > 0:
+                for s in submissions:
+                    output_file.write(json.dumps(s, sort_keys=True)+"\n")
+            time.sleep(3)
         except:
             the_type, the_value, the_traceback = sys.exc_info()
             if the_type == KeyboardInterrupt:
@@ -223,6 +261,7 @@ def main():
             print(the_type)
             print(the_traceback)
             print(the_value)
+            raise the_type
 
         print("Curr processing: ", limit)
 
