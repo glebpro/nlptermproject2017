@@ -1,5 +1,13 @@
-import json
+#
+#   Parse a .jsonlist and report some basic infornmation
+#
+#   @author Gleb Promokhov
+#
 
+import json
+from parse_comments import *
+
+# convert .jsonlist to python array
 def parse_json(fname):
     lines = open(fname).read().splitlines()
     acc = []
@@ -7,35 +15,19 @@ def parse_json(fname):
         acc.append(json.loads(l))
     return acc
 
-def count_comments(comments):
-    if comments == []:
-        return 0
-    t = 0
-    for c in comments:
-        t += 1
-        t += count_comments(c['children'])
-    return t
-
-def avg_comment_length(comments):
-    if comments == []:
-        return 0
-    t = 0
-    for c in comments:
-        t += len(c['body'])
-        t += count_comments(c['children'])
-    return t
-
-data = parse_json('CMV_10000.jsonlist')
-cc = 0
-avg_cc = 0
-avg_post = 0
-for s in data:
-    cc += count_comments(s['comments'])
-    avg_cc += avg_comment_length(s['comments'])
-    avg_post += len(s['body'])
-
-avg_cc = round(avg_cc/cc, 2)
-avg_post = round(avg_post/len(data), 2)
-
-print(json.dumps(data[len(data)-1], indent=2))
-print("#POSTS: {}\n#COMMENTS: {}\nAVGPOSTLENGTH:{}\nAVGCOMMENTLENGTH: {}\n".format(len(data), cc, avg_post, avg_cc))
+# data = parse_json('CMV_991.jsonlist')
+#
+# num_comments = 0
+# avg_post_len = 0
+# avg_comment_len = 0
+#
+# for s in data:
+#     num_comments += count_comments(s['comments'])
+#     avg_post_len += len(s['body'])
+#     avg_comment_len += avg_comment_length(s['comments'])
+#
+# avg_post_len = round(avg_post_len/len(data), 2)
+# avg_comment_len = round(avg_comment_len/len(data), 2)
+#
+# print(json.dumps(data[len(data)-1], indent=2))
+# print("#POSTS: {}\n#COMMENTS: {}\nAVGPOSTCHARS: {}\nAVGCOMMENTCHARS: {}".format(len(data), num_comments, avg_post_len, avg_comment_len))

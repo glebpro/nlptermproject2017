@@ -3,6 +3,10 @@
 #   Each JSON post object written as 1 line to output file
 #   See data_format_readme.txt for how JSON object works.
 #
+#   TODO: this script is horrible and very specific to
+#   what I needed for the term project. Will generalize
+#   when I have the time
+#
 #   @author Gleb Promokhov gleb.promokhov@gmail.com
 #
 
@@ -239,7 +243,7 @@ def main():
     pull_posts_after = 't3_72ex70'
     limit = 10000
     _limit = limit
-    get_count = 100
+    get_count = 1
 
     output_file = open('CMV_'+str(_limit)+'.jsonlist', 'a')
     print("^c to safely quit")
