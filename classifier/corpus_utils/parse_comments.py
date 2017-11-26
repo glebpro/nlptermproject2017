@@ -31,3 +31,20 @@ def avg_comment_length(comments, cl=0, t=0):
         cl += 1
         t += len(c['body']) + count_comments(c['children'])
     return t/cl
+
+# (author:comment), ordered oldest to newest
+'''
+by_author = []
+for s in data:
+    by_author.append(get_by_author(s['comments']))
+'''
+
+def get_by_author(comments, cl={}):
+    if comments == []:
+        return None
+    for c in comments:
+        if c['author'] not in cl.keys():
+            cl[c['author']] = []
+            cl[c['author']].append(c)
+        cl[c['author']].append(c)
+    return cl
