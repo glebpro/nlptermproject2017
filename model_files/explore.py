@@ -19,5 +19,36 @@ def main():
     print("confusion matrix:")
     print(confusion_matrix(y_test, lasso.predict(X_test)))
 
+    feat_list = ["CD","EX","FW","JJR","JJS","LS","MD","NNP","NNPS","PDT","POS","PRP", "PRP$","RBR","RBS","RP","TO","UH","VB","VBD","VBG","VBN","VBP",
+    "VBZ","WDT",
+    "WP",
+    "WP$",
+    "WRB",
+    "positive",
+    "italic",
+    "bold",
+    "block",
+    "edu",
+    "com",
+    "pdf",
+    "topic0",
+    "topic1",
+    "topic2",
+    "topic3",
+    "topic4",
+    "topic5",
+    "topic6",
+    "topic7",
+    "topic8"
+    ]
+
+    odds_ratios = []
+    for i in range(len(feat_list)):
+        if lasso.coef_[0][i] != 0:
+            odds_ratios.append((feat_list[i], np.exp(lasso.coef_[0][i])))
+
+    print("odds ratios:")
+    print(odds_ratios)
+
 if __name__ == "__main__":
     main()
