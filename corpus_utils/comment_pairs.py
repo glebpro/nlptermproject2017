@@ -19,7 +19,7 @@ if len(sys.argv) != 2:
     print('usage: python comment_pairs.py CMV_##.jsonlist')
     print()
     quit()
-    
+
 def clean(tokens):
     r = []
     for t in tokens:

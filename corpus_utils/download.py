@@ -218,7 +218,7 @@ def usage():
     print('$ python download.py number_posts_to_collect')
     print()
     quit()
-    
+
 def main():
 
     # class JSONDebugRequestor(prawcore.Requestor):
@@ -229,7 +229,7 @@ def main():
 
     if len(sys.argv) != 2:
         usage()
-        
+
     # load creds
     creds = json.loads(open(os.path.dirname(os.path.realpath(__file__))+'/reddit.auth.json', 'r').read())
 
@@ -264,7 +264,6 @@ def main():
         try:
             submissions, next_post = collectsubmissions(changemyview, reddit, pull_posts_after, get_count)
             pull_posts_after = next_post
-            quit()
             if len(submissions) > 0:
                 for s in submissions:
                     output_file.write(json.dumps(s, sort_keys=True)+"\n")

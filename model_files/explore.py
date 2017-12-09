@@ -2,13 +2,15 @@ import numpy as np
 from sklearn import linear_model
 from sklearn.metrics import confusion_matrix
 import pickle
+import os
 
 def main():
 
+    file_path = os.path.dirname(os.path.realpath(__file__))
     print("loading model and data...")
-    lasso = pickle.load(open("model2.sav", "rb"))
-    X_test = pickle.load(open("reduced_xtest2.sav", "rb"))
-    y_test = pickle.load(open("ytest2.sav", "rb"))
+    lasso = pickle.load(open(file_path+"/model2.sav", "rb"))
+    X_test = pickle.load(open(file_path+"/reduced_xtest2.sav", "rb"))
+    y_test = pickle.load(open(file_path+"/ytest2.sav", "rb"))
 
     print("model info:")
     print(lasso)

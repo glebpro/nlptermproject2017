@@ -1,6 +1,10 @@
 from parse_jsonlist import *
 import pickle, re, nltk, string
 import numpy as np
+import os
+import sys
+
+file_prefix = os.path.dirname(os.path.realpath(__file__))
 
 """
 this function gathers all of the comments from the comment_pairs file, and
@@ -100,8 +104,8 @@ function to load bing lexicon
 returns two lists, first positive list then negative list
 """
 def get_lexicons():
-    pos = open("positive-words.txt")
-    neg = open("negative-words.txt")
+    pos = open(file_prefix+"/positive-words.txt")
+    neg = open(file_prefix+"/negative-words.txt")
 
     pos_list = [line.strip() for line in pos.readlines()]
     neg_list = [line.strip() for line in neg.readlines()]
@@ -224,10 +228,18 @@ def count_pos(sent):
 
     return outlist
 
+def usage():
+    print("usage: python get_features.py path/to/comment_pairs.jsonlist")
+    print()
+    quit()
+
 def main():
 
+    if len(sys.argv) != 2:
+        usage()
+
     # gather 22735 pairs
-    data = parse_json('comment_pairs.txt')
+    data = parse_json(sys.argv[1])
 
     comments = []
     deltas = []
@@ -248,8 +260,8 @@ def main():
             final_deltas.append(deltas[i])
 
     # let's save these for later
-    pickle.dump(final_comments, open("full_comments2.sav", "wb"))
-    pickle.dump(final_deltas, open("full_y2.sav", "wb"))
+    pickle.dump(final_comments, open(file_prefix+"/full_comments2.sav", "wb"))
+    pickle.dump(final_deltas, open(file_prefix+"/full_y2.sav", "wb"))
 
     undersampled_comments = []
     undersampled_deltas = []
@@ -261,8 +273,8 @@ def main():
             undersampled_deltas.append(final_deltas[i])
 
     # let's save these as well
-    pickle.dump(undersampled_comments, open("undersampled_comments2.sav", "wb"))
-    pickle.dump(undersampled_deltas, open("undersampled_deltas2.sav", "wb"))
+    pickle.dump(undersampled_comments, open(file_prefix+"/undersampled_comments2.sav", "wb"))
+    pickle.dump(undersampled_deltas, open(file_prefix+"/undersampled_deltas2.sav", "wb"))
 
     # now it's time to extract all of the features.
     # first we need to load the Bing lexicons
@@ -279,7 +291,7 @@ def main():
         pos_counts[i].extend(link_counts[i])
 
     # now save it to be ready for the modelling
-    pickle.dump(pos_counts, open("undersampled_X2.sav", "wb"))
+    pickle.dump(pos_counts, open(file_prefix+"/undersampled_X2.sav", "wb"))
 
 if __name__ == "__main__":
     main()

@@ -1,2 +1,5 @@
 praw >= 5.2
 spacy >= 2.0.3
+sklearn >= 0.18.1
+numpy >= 1.13.3
+nltk >= 3.2.5
