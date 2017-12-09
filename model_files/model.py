@@ -67,19 +67,8 @@ def main():
     pickle.dump(y_train, open("ytrain2.sav", "wb"))
     pickle.dump(y_test, open("ytest2.sav", "wb"))
 
-    # now pick a cost
-    pen_vec = [10, 5, 1, 0.5, 0.1, 0.05, 0.01]
-    score_vec = []
-    for pen in pen_vec:
-        lasso = linear_model.LogisticRegression(penalty = "l1", C = pen)
-        lasso.fit(X_train, y_train)
-        score = lasso.score(X_test, y_test)
-        print(score)
-        score_vec.append(score)
-
-    cost = pen_vec[np.argmax(score_vec)]
-
-    lasso = linear_model.LogisticRegression(penalty = "l1", C = cost)
+    # cost chosen via 60/20 train/test split then rerun on full train data
+    lasso = linear_model.LogisticRegression(penalty = "l1", C = 5)
     lasso.fit(X_train, y_train)
 
     # save all models
