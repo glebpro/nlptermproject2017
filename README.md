@@ -5,7 +5,7 @@ Term project for ENGL 681 _Introduction to Natural Language Processing_ at RIT, 
 [@glebpro](https://github.com/glebpro)
 
 ## Abstract:
-Public web forums allow for massive online debate, especially on the community platform Reddit. The language of persuasive arguments can be found on the sub-community [/r/ChangeMyView](https://reddit.com/ChangeMyView), which encourages sharing views and discourse in a moderated public forum. To determine if there are any similarities between persuasive comments that were successful in changing a user's view we organized and labeled sets of argument examples, and found valuable features for classifying novel arguments through language modeling. Our model results saw 32% improved accuracy over the baseline, concluding that there are identifiable stylistic and topic features in effective arguments.
+Public web forums allow for massive online debate, especially on the community platform Reddit. The language of persuasive arguments can be found on the sub-community [/r/ChangeMyView](https://reddit.com/ChangeMyView), which encourages sharing views and discourse in a moderated public forum. To determine if there are any similarities between persuasive comments that were successful in changing a user's view we organized and labeled sets of argument examples, and found valuable features for classifying novel arguments through language modeling. Our model results saw 6% improved accuracy over the baseline, concluding that there are identifiable stylistic and topic features in effective arguments.
 
 [[Slides](slides.pdf)][[Paper](paper.pdf)]
 
